@@ -150,3 +150,45 @@ def search_books(search_string):
     except requests.exceptions.RequestException as e:
         print(f"An error occurred: {e}")
         return None
+    
+def get_book_info_from_title_author_isbn(title, author,isbn):
+    """
+    Retrieve book information from Google Books API using the title and author.
+    
+    This function sends a request to the Google Books API and extracts information
+    about the book corresponding to the given title and author. It specifically extracts
+    the ISBN number of the book from the API's response.
+    
+    Parameters:
+    - title (str): The title of the book for which information is being retrieved.
+    - author (str): The author of the book for which information is being retrieved.
+    
+    Returns:
+    - dict: A dictionary containing the ISBN number of the book.
+            If the book is not found, returns a dictionary with "ISBN not found" as a placeholder.
+            If the API call fails or the response is not as expected, returns None.
+    
+    Raises:
+    - requests.exceptions.RequestException: An error occurred while making the request to the Google Books API.
+    """
+    url=f"https://www.googleapis.com/books/v1/volumes?q=intitle:{title}+inauthor:{author}+isbn:{isbn}"
+    try:
+        response = requests.get(url)
+        response.raise_for_status()  # Raises an HTTPError if the response status code is 4XX/5XX
+        data = response.json()
+        
+        books=[]
+        if data["totalItems"] > 0:
+            for item in data["items"]:
+                book_data = item["volumeInfo"]
+                isbn = book_data.get("industryIdentifiers", [{"type": "ISBN_13", "identifier": "ISBN not found"}])[0]["identifier"]
+                title = book_data.get("title", "Title not found")
+                authors = book_data.get("authors", ["Author not found"])
+                books.append({"title": title, "authors": authors, "isbn": isbn})                
+            return books
+        else:
+            return []
+    except requests.exceptions.RequestException as e:
+        print(f"An error occurred: {e}")
+        return None # Return None if an error occurs    
+    
