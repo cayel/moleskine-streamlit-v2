@@ -53,7 +53,12 @@ with col2:
             st.write(selected_book_info)
             # display image when a book is selected
             image_url = get_book_image(selected_book_info["isbn"])
-            st.image(image_url, caption=selected_book_info["title"], use_column_width=False)
+            if image_url is None:
+                st.write("Failed to fetch image from Google Books API.")
+            else:
+                print("===================================== Image URL =====================================")
+                print(image_url)
+                st.image(image_url, caption=selected_book_info["title"], use_column_width=False)
             book = Book(selected_book_info["title"], selected_book_info["authors"][0], selected_book_info["isbn"])            
             # Si je clique sur le bouton Save alors j'affiche une boite de dialoge avec le titre du livre
             if save:

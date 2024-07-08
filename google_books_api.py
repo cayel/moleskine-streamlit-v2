@@ -103,9 +103,9 @@ def get_book_image(isbn):
         
         if data["totalItems"] > 0:
             book_data = data["items"][0]["volumeInfo"]
-            return book_data.get("imageLinks", {"thumbnail": "Image not found"})["thumbnail"]
+            return book_data.get("imageLinks", {"thumbnail": None})["thumbnail"]
         else:
-            return "Image not found"
+            return None
     except requests.exceptions.RequestException as e:
         print(f"An error occurred: {e}")
         return None
